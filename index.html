@@ -28,14 +28,22 @@
             <div class="mt-8 border-t pt-6">
                 <form id="new-post-form" class="space-y-4">
                     <div>
+                        <!-- add a placeholder for the title -->
                         <label for="new-title" class="block text-gray-700 text-sm font-medium mb-1">Title:</label>
-                        <input type="text" name="title" id="new-title" required
+                        <input type="text" name="title" id="new-title" required placeholder="Enter your title here..."
                                class="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
+                        <!-- add a placeholder for the content -->
                         <label for="new-content" class="block text-gray-700 text-sm font-medium mb-1">Content:</label>
-                        <textarea name="content" id="new-content" rows="6" required
+                        <textarea name="content" id="new-content" rows="6" required placeholder="Enter your content here..."
                                   class="p-3 border border-gray-300 rounded-md w-full resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <!-- add a placeholder for the image -->
+                    <div>
+                        <label for="new-image" class="block text-gray-700 text-sm font-medium mb-1">Image:</label>
+                        <input type="file" name="image" id="new-image" accept="image/*" placeholder="Upload an image..."
+                               class="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label for="new-author" class="block text-gray-700 text-sm font-medium mb-1">Author:</label>

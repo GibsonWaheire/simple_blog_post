@@ -28,7 +28,10 @@ function displayPosts() {
       posts.forEach(post => { // loop through the posts
         const div = document.createElement("div"); // create a new div element
         div.className = "bg-white p-4 rounded-lg shadow cursor-pointer hover:bg-blue-50 transition duration-200"; // styled container with hover effect
-        div.textContent = post.title; // set the text content of the div to the post title
+        div.innerHTML = `
+          <img src="${post.image || 'https://via.placeholder.com/100x60'}" alt="thumb" class="w-full h-32 object-cover rounded mb-2">
+          <h3 class="font-semibold text-lg">${post.title}</h3>
+        `; // set the inner HTML to include image and title
         div.addEventListener("click", () => handlePostClick(post.id)); // click to load post detail
         postList.appendChild(div); // add the div to the post list
       });
@@ -47,13 +50,17 @@ function handlePostClick(postId) {
       const detail = document.getElementById("post-detail");
 
       // render post detail with delete, edit, and save buttons, and show image if available from submitted data only
+      // get the image from the post using getElementById
+      // and set the image src to the image url if it exists, otherwise set it to a default placeholder image.
       const imageURL = post.image?.trim() ? post.image : "https://via.placeholder.com/600x200";
-// so the below code is a template literal that is used to display the post detail. inserted into the #post-detail div when a user clicks a blog post title.
+
+      // so the below code is a template literal that is used to display the post detail. inserted into the #post-detail div when a user clicks a blog post title.
       detail.innerHTML = `
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-2xl font-bold">${post.title}</h2>
           <button id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">Delete</button>
         </div>
+        <img src="${imageURL}" alt="Post Image" class="rounded mb-4 w-full max-h-60 object-cover" />
         <p class="mb-2">${post.content}</p>
         <h4 class="mb-4 font-semibold">Author: ${post.author}</h4>
         <button id="edit-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button>
@@ -71,7 +78,8 @@ function handlePostClick(postId) {
       document.getElementById("save-btn").addEventListener("click", () => {
         const updatedPost = {
           title: document.getElementById("edit-title").value,
-          content: document.getElementById("edit-content").value
+          content: document.getElementById("edit-content").value,
+          image: post.image // preserve original image
         };
 
         fetch(`${BASE_URL}/${currentPostId}`, {
@@ -96,6 +104,7 @@ function handlePostClick(postId) {
       });
     });
 }
+
 // so the below code is a function that toggles the visibility of the new post form., so it creates a button that toggles the visibility of the form. then it adds the button to the form. then it adds an event listener to the button that toggles the visibility of the form.
 function togglePostForm() {
   const form = document.getElementById("new-post-form");
@@ -116,11 +125,19 @@ function addNewPostListener() {
   form.addEventListener("submit", e => {
     e.preventDefault();
 
+    const imageInput = document.getElementById("new-image");
+    let imageUrl = "";
+
+    if (imageInput.files && imageInput.files[0]) {
+      const file = imageInput.files[0];
+      imageUrl = URL.createObjectURL(file); // convert image to blob URL for preview
+    }
+
     const newPost = {
       title: form.title.value,
       content: form.content.value,
       author: form.author.value,
-      image: form.image ? form.image.value : "" // optional image field from form only
+      image: imageUrl // get image URL from file input
     };
 
     fetch(BASE_URL, {

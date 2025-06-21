@@ -102,11 +102,25 @@
       ]
     },
     {
-      "title": "test post ",
-      "content": "this is a test post ",
-      "author": "gibson",
+      "title": "this ",
+      "content": "yes, this is the new post for test ",
+      "author": "Gibson",
       "image": "",
-      "id": 9
+      "id": 10
+    },
+    {
+      "title": "test image",
+      "content": "this is a new post for me.  ",
+      "author": "Gibson",
+      "image": "C:\\fakepath\\born to perform.jpg",
+      "id": 11
+    },
+    {
+      "title": "test 3",
+      "content": "yes ",
+      "author": "Gibson",
+      "image": "C:\\fakepath\\Picture 1.jpg",
+      "id": 12
     }
   ]
 }
