@@ -1,0 +1,11 @@
+.hidden {
+    display: none;
+  }
+  
+  form input, form textarea {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 8px;
+  }
+  
