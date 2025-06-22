@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", main);
 
 // ✅ Static JSON file path (GitHub Pages compatible)
 const BASE_URL = "./db.json";
-const BASE_URL ="http://localhost:3000/posts";   // Assumes db.json is in root directory
+// const BASE_URL ="http://localhost:3000/posts";   // Assumes db.json is in root directory
 let currentPostId = null;
 
 function main() {
