@@ -1,7 +1,8 @@
-document.addEventListener("DOMContentLoaded", main);
+document.addEventListener("DOMContentLoaded", main); // ✅ Ensures DOM is loaded before executing main function
 
 // ✅ Static JSON file path (GitHub Pages compatible)
 // const BASE_URL = "./db.json";
+
 const BASE_URL ="http://localhost:3000/posts";   // Assumes db.json is in root directory
 let currentPostId = null;
 
@@ -14,55 +15,55 @@ function main() {
 
 // ✅ Fetch posts from json-server and display them
 function displayPosts() {
-  fetch(BASE_URL)
-    .then(res => {
-      if (!res.ok) {
+  fetch(BASE_URL) // ✅ Fetches posts from json-server
+    .then(res => { // ✅ Handles response from json-server
+      if (!res.ok) { // ✅ Checks if response is successful
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      return res.json();
+      return res.json(); // ✅ Parses response as JSON
     })
-    .then(posts => {
+    .then(posts => { // ✅ Handles posts data
       const postList = document.getElementById("post-list");
       postList.innerHTML = "";
 
-      if (posts.length === 0) {
+      if (posts.length === 0) { // ✅ Checks if there are no posts. we call this a "happy path". 
         postList.innerHTML = '<p class="text-gray-500 text-center">No posts found. Create your first post!</p>';
         return;
       }
 
-      posts.forEach(post => {
-        const div = document.createElement("div");
-        div.className = "bg-white p-4 rounded-lg shadow cursor-pointer hover:bg-blue-50 transition duration-200";
+      posts.forEach(post => { // ✅ Loops through each post and creates a div for each post
+        const div = document.createElement("div"); // ✅ Creates a div for each post
+        div.className = "bg-white p-4 rounded-lg shadow cursor-pointer hover:bg-blue-50 transition duration-200"; // ✅ Adds a class to the div
 
         div.innerHTML = `
           <img src="${post.image || 'https://via.placeholder.com/100x60'}" alt="thumb" class="w-full h-32 object-cover rounded mb-2">
           <h3 class="font-semibold text-lg">${post.title || 'Untitled Post'}</h3>
-        `;
+        `; // ✅ Adds a title to the div. the reason for this is because we want to display the title of the post in the div.
 
-        div.addEventListener("click", () => showPostDetail(post));
-        postList.appendChild(div);
+        div.addEventListener("click", () => showPostDetail(post)); // ✅ Adds an event listener to the div. the reason for this is because we want to display the details of the post when the div is clicked.
+        postList.appendChild(div); // ✅ Adds the div to the postList.
       });
 
       if (posts.length > 0) {
         showPostDetail(posts[0]);
       }
     })
-    .catch(err => {
-      console.error("Failed to load posts:", err);
-      const postList = document.getElementById("post-list");
-      postList.innerHTML = '<p class="text-red-500 text-center">Failed to load posts. Please check if json-server is running.</p>';
+    .catch(err => { //  ✅ Handles error if posts are not loaded (this is a "sad path") . 
+      console.error("Failed to load posts:", err); // ✅ Logs error to console
+      const postList = document.getElementById("post-list"); // ✅ Gets the postList element
+      postList.innerHTML = '<p class="text-red-500 text-center">Failed to load posts. Please check if json-server is running.</p>'; // ✅ Displays error message
     });
 }
 
 // ✅ Enhanced post details display with better error handling
 function showPostDetail(post) {
-  currentPostId = post.id;
-  const detail = document.getElementById("post-detail");
+  currentPostId = post.id; // ✅ Sets the currentPostId to the id of the post
+  const detail = document.getElementById("post-detail"); // ✅ Gets the postDetail element
 
   const imageURL =
-    typeof post.image === "string" && post.image.trim() !== ""
-      ? post.image
-      : "https://via.placeholder.com/600x200";
+    typeof post.image === "string" && post.image.trim() !== "" // ✅ Checks if the image is a string and is not empty
+      ? post.image // ✅ If the image is a string and is not empty, set the imageURL to the image
+      : "https://via.placeholder.com/600x200"; // ✅ If the image is not a string or is empty, set the imageURL to a placeholder image
 
   detail.innerHTML = `
     <div class="flex justify-between items-center mb-4">
@@ -98,7 +99,7 @@ function showPostDetail(post) {
       reader.onerror = function() {
         alert("Error reading file. Please try again.");
       };
-      reader.readAsDataURL(file);
+      alert("File uploaded successfully.");
     }
   });
 

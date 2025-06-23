@@ -1,0 +1,19 @@
+{
+  "name": "simple_blogpost_manager_challenge",
+  "version": "1.0.0",
+  "description": "A simple single-page application (SPA) built using **HTML**, **CSS (Tailwind)**, and **Vanilla JavaScript** that allows users to **view**, **create**, **edit**, and **delete** blog posts. It uses a mock REST API powered by `json-server`.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GibsonWaheire/simple_blog_post.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GibsonWaheire/simple_blog_post/issues"
+  },
+  "homepage": "https://github.com/GibsonWaheire/simple_blog_post#readme"
+}
