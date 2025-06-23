@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", main);
 
 // ✅ Static JSON file path (GitHub Pages compatible)
-const BASE_URL = "./db.json";
-// const BASE_URL ="http://localhost:3000/posts";   // Assumes db.json is in root directory
+// const BASE_URL = "./db.json";
+const BASE_URL ="http://localhost:3000/posts";   // Assumes db.json is in root directory
 let currentPostId = null;
 
 function main() {
@@ -12,14 +12,23 @@ function main() {
   addEditPostListener();
 }
 
-// ✅ Fetch posts from static db.json and display them
+// ✅ Fetch posts from json-server and display them
 function displayPosts() {
   fetch(BASE_URL)
-    .then(res => res.json())
-    .then(data => {
-      const posts = data.posts;
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(posts => {
       const postList = document.getElementById("post-list");
       postList.innerHTML = "";
+
+      if (posts.length === 0) {
+        postList.innerHTML = '<p class="text-gray-500 text-center">No posts found. Create your first post!</p>';
+        return;
+      }
 
       posts.forEach(post => {
         const div = document.createElement("div");
@@ -27,7 +36,7 @@ function displayPosts() {
 
         div.innerHTML = `
           <img src="${post.image || 'https://via.placeholder.com/100x60'}" alt="thumb" class="w-full h-32 object-cover rounded mb-2">
-          <h3 class="font-semibold text-lg">${post.title}</h3>
+          <h3 class="font-semibold text-lg">${post.title || 'Untitled Post'}</h3>
         `;
 
         div.addEventListener("click", () => showPostDetail(post));
@@ -40,10 +49,12 @@ function displayPosts() {
     })
     .catch(err => {
       console.error("Failed to load posts:", err);
+      const postList = document.getElementById("post-list");
+      postList.innerHTML = '<p class="text-red-500 text-center">Failed to load posts. Please check if json-server is running.</p>';
     });
 }
 
-// ✅ Static version of post details (no backend fetch by ID)
+// ✅ Enhanced post details display with better error handling
 function showPostDetail(post) {
   currentPostId = post.id;
   const detail = document.getElementById("post-detail");
@@ -55,28 +66,37 @@ function showPostDetail(post) {
 
   detail.innerHTML = `
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">${post.title}</h2>
-      <button id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">Delete</button>
+      <h2 class="text-2xl font-bold">${post.title || 'Untitled Post'}</h2>
+      <button id="delete-btn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded transition duration-200">Delete</button>
     </div>
     <img id="post-image-${post.id}" src="${imageURL}" alt="Post Image" class="rounded mb-4 w-full max-h-60 object-cover" /> 
-    <p class="mb-2">${post.content}</p>
-    <h4 class="mb-4 font-semibold">Author: ${post.author}</h4>
-    <button id="edit-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</button>
-    <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">Save</button>
+    <p class="mb-2">${post.content || 'No content available'}</p>
+    <h4 class="mb-4 font-semibold">Author: ${post.author || 'Unknown'}</h4>
+    <button id="edit-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">Edit</button>
+    <button id="save-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2 transition duration-200">Save</button>
     <input type="text" id="edit-image-${post.id}" value="${post.image || ''}" placeholder="Update image URL" class="mt-4 p-2 border rounded-md w-full" />
     <div class="text-center my-2 text-gray-500">— OR —</div>
     <input type="file" id="upload-image-${post.id}" accept="image/*" class="p-2 border rounded-md w-full" />
   `;
 
-  // ⛔ File/image upload preview works, but changes won’t save unless connected to a backend
+  // ✅ File/image upload preview with enhanced error handling
   const uploadInput = document.getElementById(`upload-image-${post.id}`);
   uploadInput.addEventListener("change", function (e) {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; 
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size too large. Please select an image under 5MB.");
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = function (event) {
         document.getElementById(`post-image-${post.id}`).src = event.target.result;
         document.getElementById(`edit-image-${post.id}`).value = event.target.result;
+      };
+      reader.onerror = function() {
+        alert("Error reading file. Please try again.");
       };
       reader.readAsDataURL(file);
     }
@@ -85,17 +105,17 @@ function showPostDetail(post) {
   // 🖊 Populate hidden form on edit
   document.getElementById("edit-btn").addEventListener("click", () => {
     const form = document.getElementById("edit-post-form");
-    document.getElementById("edit-title").value = post.title;
-    document.getElementById("edit-content").value = post.content;
+    document.getElementById("edit-title").value = post.title || '';
+    document.getElementById("edit-content").value = post.content || '';
     form.classList.remove("hidden");
   });
 
-  // ⛔ This save won’t work on GitHub Pages (no PATCH support)
+  // ✅ Enhanced save functionality with proper error handling
   document.getElementById("save-btn").addEventListener("click", () => {
     const updatedPost = {
-      title: document.getElementById("edit-title").value,
-      content: document.getElementById("edit-content").value,
-      image: document.getElementById(`edit-image-${post.id}`).value
+      title: document.getElementById("edit-title").value || post.title,
+      content: document.getElementById("edit-content").value || post.content,
+      image: document.getElementById(`edit-image-${post.id}`).value || post.image
     };
 
     fetch(`${BASE_URL}/${currentPostId}`, {
@@ -103,20 +123,42 @@ function showPostDetail(post) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedPost)
     })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(() => {
         displayPosts();
-        showPostDetail(post);
+        showPostDetail({...post, ...updatedPost});
         document.getElementById("edit-post-form").classList.add("hidden");
+      })
+      .catch(err => {
+        console.error("Failed to update post:", err);
+        alert("Failed to update post. Please try again.");
       });
   });
 
-  // ⛔ Delete also won't work on static hosting
+  // ✅ Enhanced delete functionality with confirmation
   document.getElementById("delete-btn").addEventListener("click", () => {
-    fetch(`${BASE_URL}/${post.id}`, { method: "DELETE" })
-      .then(() => {
-        displayPosts();
-        document.getElementById("post-detail").innerHTML = "<p>Post deleted.</p>";
-      });
+    if (confirm("Are you sure you want to delete this post?")) {
+      fetch(`${BASE_URL}/${post.id}`, { method: "DELETE" })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(() => {
+          displayPosts();
+          document.getElementById("post-detail").innerHTML = "<p class='text-gray-500 text-center'>Post deleted successfully.</p>";
+        })
+        .catch(err => {
+          console.error("Failed to delete post:", err);
+          alert("Failed to delete post. Please try again.");
+        });
+    }
   });
 }
 
@@ -135,19 +177,49 @@ function togglePostForm() {
   });
 }
 
-// ⛔ Create new post (will not save unless hosted with backend)
+// ✅ Enhanced new post creation with validation and error handling
 function addNewPostListener() {
   const form = document.getElementById("new-post-form");
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
+    // Basic validation
+    const title = form.title.value.trim();
+    const content = form.content.value.trim();
+    const author = form.author.value.trim();
+
+    if (!title || !content || !author) {
+      alert("Please fill in all required fields (title, content, and author).");
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = document.getElementById("submit-btn");
+    const submitText = submitBtn.querySelector(".submit-text");
+    const loadingText = submitBtn.querySelector(".loading-text");
+    
+    submitBtn.disabled = true;
+    submitText.classList.add("hidden");
+    loadingText.classList.remove("hidden");
+
     const imageInput = document.getElementById("new-image");
     const file = imageInput.files[0];
 
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size too large. Please select an image under 5MB.");
+        resetSubmitButton();
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = function () {
         createNewPost(reader.result);
+      };
+      reader.onerror = function() {
+        alert("Error reading file. Please try again.");
+        resetSubmitButton();
       };
       reader.readAsDataURL(file);
     } else {
@@ -156,10 +228,11 @@ function addNewPostListener() {
 
     function createNewPost(imageData) {
       const newPost = {
-        title: form.title.value,
-        content: form.content.value,
-        author: form.author.value,
-        image: imageData
+        title: title,
+        content: content,
+        author: author,
+        image: imageData,
+        date: new Date().toISOString().split('T')[0] // Add current date
       };
 
       fetch(BASE_URL, {
@@ -167,17 +240,37 @@ function addNewPostListener() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPost)
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(() => {
           form.reset();
           form.classList.add("hidden");
           displayPosts();
+          // Show success message
+          showSuccessMessage("Post created successfully!");
+        })
+        .catch(err => {
+          console.error("Failed to create post:", err);
+          alert("Failed to create post. Please try again.");
+        })
+        .finally(() => {
+          resetSubmitButton();
         });
+    }
+
+    function resetSubmitButton() {
+      submitBtn.disabled = false;
+      submitText.classList.remove("hidden");
+      loadingText.classList.add("hidden");
     }
   });
 }
 
-// ⛔ Edit form submit (same issue — no PATCH on static hosting)
+// ✅ Enhanced edit form submit with validation and error handling
 function addEditPostListener() {
   const form = document.getElementById("edit-post-form");
   const cancelBtn = document.getElementById("cancel-edit");
@@ -185,9 +278,27 @@ function addEditPostListener() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
+    // Basic validation
+    const title = document.getElementById("edit-title").value.trim();
+    const content = document.getElementById("edit-content").value.trim();
+
+    if (!title || !content) {
+      alert("Please fill in both title and content fields.");
+      return;
+    }
+
+    // Show loading state
+    const updateBtn = document.getElementById("update-btn");
+    const updateText = updateBtn.querySelector(".update-text");
+    const updatingText = updateBtn.querySelector(".updating-text");
+    
+    updateBtn.disabled = true;
+    updateText.classList.add("hidden");
+    updatingText.classList.remove("hidden");
+
     const updatedData = {
-      title: document.getElementById("edit-title").value,
-      content: document.getElementById("edit-content").value
+      title: title,
+      content: content
     };
 
     fetch(`${BASE_URL}/${currentPostId}`, {
@@ -195,15 +306,48 @@ function addEditPostListener() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData)
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(() => {
         form.classList.add("hidden");
         displayPosts();
-        showPostDetail(updatedData);
+        showSuccessMessage("Post updated successfully!");
+      })
+      .catch(err => {
+        console.error("Failed to update post:", err);
+        alert("Failed to update post. Please try again.");
+      })
+      .finally(() => {
+        updateBtn.disabled = false;
+        updateText.classList.remove("hidden");
+        updatingText.classList.add("hidden");
       });
   });
 
   cancelBtn.addEventListener("click", () => {
     form.classList.add("hidden");
   });
+}
+
+// ✅ Utility function to show success messages
+function showSuccessMessage(message) {
+  const successMsg = document.createElement("div");
+  successMsg.className = "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 transform transition-all duration-300 ease-in-out";
+  successMsg.textContent = message;
+  document.body.appendChild(successMsg);
+  
+  // Animate in
+  setTimeout(() => {
+    successMsg.style.transform = "translateX(0)";
+  }, 100);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    successMsg.style.transform = "translateX(100%)";
+    setTimeout(() => successMsg.remove(), 300);
+  }, 3000);
 }

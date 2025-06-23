@@ -24,6 +24,36 @@ A simple single-page application (SPA) built using **HTML**, **CSS (Tailwind)**,
 - **json-server** (Mock backend)
 
 ---
+Key Flow Pattern for js
+## 🧠 Application Logic Overview
+
+### 🌀 Initialization Flow
+- **Document loads** → Triggers `main()` function
+- `main()` calls `displayPosts()` to fetch and show all posts
+- Posts are dynamically rendered into the DOM
+
+---
+
+### 📝 Form Handling
+- **Image uploads**:
+  - Processed with `FileReader` to convert to base64
+  - Image preview shown before submission
+- **Text-only submissions**:
+  - Sent directly as JSON
+- **Both types**:
+  - Sent via `POST` request to server
+  - UI refreshes after successful submission
+
+---
+
+### 🛠️ Post Management
+- **Click on post** → Loads full post details
+- **Edit flow**:
+  - `Edit` button reveals hidden form with post data
+  - `Save` button sends a `PATCH` request to update
+- **Delete flow**:
+  - `Delete` button sends a `DELETE` request
+  - Post list auto-refreshes to reflect changes
 
 ## 🚀 Getting Started
 
