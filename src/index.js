@@ -29,8 +29,8 @@ function displayPosts() {
       posts.forEach(post => {
         const div = document.createElement("div");
         div.className = "bg-white p-4 rounded-lg shadow cursor-pointer hover:bg-blue-50 transition duration-200";
-        div.innerHTML = `
-          <img src="${post.image || 'https://via.placeholder.com/100x60'}" alt="thumb" class="w-full h-32 object-cover rounded mb-2">
+        div.innerHTML = 
+        `
           <h3 class="font-semibold text-lg">${post.title || 'Untitled Post'}</h3>
         `;
         div.addEventListener("click", () => showPostDetail(post));
