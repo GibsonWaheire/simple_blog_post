@@ -14,7 +14,7 @@ A simple single-page application (SPA) built using **HTML**, **CSS (Tailwind)**,
 - ✅ Delete a post with confirmation.
 - ✅ Mobile-friendly, clean UI using Tailwind CSS.
 - ✅ **Enhanced UX**: Loading states, success messages, form validation.
-- ✅ **Image handling**: File size validation (5MB max), base64 conversion.
+- ✅ **Image handling**: File size validation (5MB max), 
 - ✅ **Error handling**: Comprehensive error messages and fallbacks.
 - ✅ **Testing**: Built-in test suite for functionality verification.
 
