@@ -180,6 +180,16 @@ function togglePostForm() {
 
 // ✅ Enhanced new post creation with validation and error handling
 function addNewPostListener() {
+  const imageURL = form.querySelector("#image-url").value.trim();
+  const newPost = {
+    title,
+    content,
+    author,
+    image: imageURL,
+    date: new Date().toISOString().split('T')[0]
+  }; // so  i changed this since the images is bring unncessary data using base64 string
+  
+
   const form = document.getElementById("new-post-form");
   form.addEventListener("submit", (e) => {
     e.preventDefault();

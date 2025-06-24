@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/GibsonWaheire/simple_blog_post/issues"
   },
-  "homepage": "https://github.com/GibsonWaheire/simple_blog_post#readme"
+  "homepage": "https://github.com/GibsonWaheire/simple_blog_post#readme",
+  "dependencies": {
+    "json-server": "^1.0.0-beta.3"
+  }
 }
