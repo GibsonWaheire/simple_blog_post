@@ -51,7 +51,7 @@ function displayPosts() {
     .catch(err => { //  ✅ Handles error if posts are not loaded (this is a "sad path") . 
       console.error("Failed to load posts:", err); // ✅ Logs error to console
       const postList = document.getElementById("post-list"); // ✅ Gets the postList element
-      postList.innerHTML = '<p class="text-red-500 text-center">Failed to load posts. Please check if json-server is running.</p>'; // ✅ Displays error message
+      postList.innerHTML = '<p class="text-red-500 text-center">Loading posts...</p>'; // ✅ Displays error message
     });
 }
 
@@ -342,11 +342,11 @@ function showSuccessMessage(message) {
   document.body.appendChild(successMsg);
   
   // Animate in
-  setTimeout(() => {
+  setTimeout(() => { //this code is used to animate the success message in from the right side of the screen. 
     successMsg.style.transform = "translateX(0)";
   }, 100);
   
-  // Remove after 3 seconds
+  // Remove after 3 seconds 
   setTimeout(() => {
     successMsg.style.transform = "translateX(100%)";
     setTimeout(() => successMsg.remove(), 300);
